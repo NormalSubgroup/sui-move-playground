@@ -1,0 +1,17 @@
+{
+  "name": "move-web-compiler",
+  "version": "1.0.0",
+  "description": "Move语言编译器Web服务",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["move", "compiler", "webassembly", "wasm"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+} 

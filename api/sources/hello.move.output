@@ -1,0 +1,10 @@
+检测到Move.toml文件: /home/cx/move2wasm/move-web-compiler/Move.toml
+编译处理过程：
+开始编译文件: sources/hello.move
+源文件数量: 1
+依赖文件数量: 1676
+地址映射数量: 16
+编译失败！
+错误详情：
+The following files were marked as both targets and dependencies:
+    /home/cx/move2wasm/move-web-compiler/sources/hello.move
