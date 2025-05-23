@@ -15,7 +15,7 @@
 Before you begin, ensure you have the following installed:
 
 - **Rust**: Version `>= 1.75.0`. [Install Rust](https://www.rust-lang.org/tools/install)
-- **Sui Cli**: Follow the instructions at [MystenLabs/sui](https://github.com/MystenLabs/sui).
+- **Sui Cli**: Follow the instructions at [MystenLabs/sui](https://docs.sui.io/guides/developer/getting-started/sui-install).
 
 ### Running Locally
 
@@ -26,6 +26,12 @@ Before you begin, ensure you have the following installed:
     ```
 
 2. Start the service:
+> **💡 First-time Setup Tip**: If this is your first time running the project, we recommend building the API components first to avoid longer startup times:
+> ```bash
+> cd api
+> cargo build
+> cd ..
+> ```
     ```bash
     ./run.sh
     ```
