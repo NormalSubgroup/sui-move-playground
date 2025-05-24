@@ -183,7 +183,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ---
 
 <div align="center">
-  <strong>Happy coding with Sui Move Playground! 🚀</strong>
+  <strong>Happy coding with Sui Move Playground!</strong>
   
   ⭐ **Star us on GitHub** if you find this project helpful!
 </div>
