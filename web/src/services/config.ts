@@ -1,7 +1,7 @@
 // 应用配置
 
 // API基础URL，可以根据环境变量设置不同的URL
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
+export const API_BASE_URL = '';
 
 // API路径
 export const API_PATHS = {
