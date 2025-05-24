@@ -89,31 +89,31 @@ For developers looking to contribute or customize:
 
 ```bash
 # Start service
-sudo ./manage.sh start
+sudo ./scripts/manage.sh start
 
 # Check status
-./manage.sh status
+./scripts/manage.sh status
 
 # Stop service
-sudo ./manage.sh stop
+sudo ./scripts/manage.sh stop
 ```
 
 ### 🛠️ Management Tools
 
 #### Complete Command List
 ```bash
-./manage.sh help        # Show help information
-./manage.sh status      # Check server status
-./manage.sh test        # Run deployment tests
-sudo ./manage.sh start  # Start server
-sudo ./manage.sh stop   # Stop server
-sudo ./manage.sh restart # Restart server
-./manage.sh build       # Rebuild project
-./manage.sh logs        # View server processes
-./manage.sh journal     # View systemd logs
-sudo ./manage.sh update # Update and redeploy
-sudo ./manage.sh install   # Install as system service
-sudo ./manage.sh uninstall # Uninstall system service
+./scripts/manage.sh help        # Show help information
+./scripts/manage.sh status      # Check server status
+./scripts/manage.sh test        # Run deployment tests
+sudo ./scripts/manage.sh start  # Start server
+sudo ./scripts/manage.sh stop   # Stop server
+sudo ./scripts/manage.sh restart # Restart server
+./scripts/manage.sh build       # Rebuild project
+./scripts/manage.sh logs        # View server processes
+./scripts/manage.sh journal     # View systemd logs
+sudo ./scripts/manage.sh update # Update and redeploy
+sudo ./scripts/manage.sh install   # Install as system service
+sudo ./scripts/manage.sh uninstall # Uninstall system service
 ```
 
 #### System Service Mode
@@ -122,7 +122,7 @@ Install as a system service for automatic startup:
 
 ```bash
 # Install system service
-sudo ./manage.sh install
+sudo ./scripts/manage.sh install
 
 # Manage with systemctl
 systemctl status sui-move-playground
@@ -138,9 +138,11 @@ journalctl -f -u sui-move-playground
 
 ## 📚 Documentation
 
-- 🚀 **[Quick Deployment Guide](DEPLOYMENT_SUMMARY.md)**
-- 📘 **[Detailed Production Guide](PRODUCTION_DEPLOYMENT.md)**
-- 🔧 **[API Documentation](api_documentation.md)** - 完整的后端API参考文档
+- 🚀 **[Quick Deployment Guide](docs/DEPLOYMENT_SUMMARY.md)**
+- 📘 **[Detailed Production Guide](docs/PRODUCTION_DEPLOYMENT.md)**
+- 🔧 **[API Documentation](docs/api_documentation.md)** - 完整的后端API参考文档
+- 📋 **[Final Deployment Status](docs/FINAL_DEPLOYMENT_STATUS.md)**
+- 📁 **[Project Structure](docs/PROJECT_STRUCTURE.md)** - 项目目录结构说明
 - 🎨 **[Frontend Guide](docs/frontend.md)**
 
 ## 🤝 Contributing

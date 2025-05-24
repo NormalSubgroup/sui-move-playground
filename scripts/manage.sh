@@ -407,8 +407,8 @@ install_services() {
     
     # 安装前端服务
     echo -e "${CYAN}安装前端服务...${NC}"
-    if [ -f "sui-move-playground.service" ]; then
-        cp sui-move-playground.service /etc/systemd/system/
+    if [ -f "deploy/sui-move-playground.service" ]; then
+        cp deploy/sui-move-playground.service /etc/systemd/system/
         echo -e "${GREEN}✅ 前端服务文件已安装${NC}"
     else
         echo -e "${RED}❌ 未找到前端服务文件${NC}"
@@ -417,8 +417,8 @@ install_services() {
     
     # 安装后端服务
     echo -e "${CYAN}安装后端服务...${NC}"
-    if [ -f "sui-move-api.service" ]; then
-        cp sui-move-api.service /etc/systemd/system/
+    if [ -f "deploy/sui-move-api.service" ]; then
+        cp deploy/sui-move-api.service /etc/systemd/system/
         echo -e "${GREEN}✅ 后端服务文件已安装${NC}"
     else
         echo -e "${RED}❌ 未找到后端服务文件${NC}"
