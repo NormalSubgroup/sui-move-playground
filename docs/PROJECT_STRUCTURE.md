@@ -27,7 +27,8 @@ sui-move-playground/
 │   ├── FINAL_DEPLOYMENT_STATUS.md # 最终部署状态
 │   └── PROJECT_STRUCTURE.md     # 项目结构说明（本文档）
 ├── scripts/                     # 脚本文件
-│   └── manage.sh               # 生产环境管理脚本
+│   ├── manage.sh               # 生产环境管理脚本
+│   └── run.sh                  # 开发环境启动脚本
 ├── deploy/                      # 部署配置
 │   ├── sui-move-playground.service # SystemD前端服务配置
 │   └── sui-move-api.service     # SystemD后端服务配置
@@ -37,7 +38,6 @@ sui-move-playground/
 │   ├── logo.png                # 项目Logo
 │   └── screenshot_demo.png     # 演示截图
 ├── .vscode/                     # VSCode配置
-├── run.sh                       # 开发环境启动脚本
 ├── README.md                    # 项目主文档
 ├── LICENSE                      # 开源协议
 └── .gitignore                   # Git忽略规则
@@ -75,6 +75,10 @@ sui-move-playground/
   - 服务启动/停止/重启
   - 状态检查和测试
   - SystemD服务安装
+- **run.sh**: 开发环境启动脚本
+  - 自动启动前后端服务
+  - 支持Bun和npm包管理器
+  - 信号处理和清理功能
 
 #### `deploy/`
 部署配置文件：
@@ -98,7 +102,7 @@ sui-move-playground/
 ### 开发环境
 ```bash
 # 快速启动
-./run.sh
+./scripts/run.sh
 
 # 分别启动
 cd api && cargo run          # 启动后端

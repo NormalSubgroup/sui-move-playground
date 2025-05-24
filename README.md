@@ -62,7 +62,7 @@ Before you begin, ensure you have the following installed:
 
 3. **Start the service**
    ```bash
-   ./run.sh
+   ./scripts/run.sh
    ```
 
 4. **Access the playground**
