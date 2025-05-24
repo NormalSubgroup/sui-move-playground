@@ -1,6 +1,6 @@
 # Sui Move Playground ✨
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-6366f1.svg?style=for-the-badge)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-6366f1.svg?style=for-the-badge)](LICENSE)
 [![Build](https://img.shields.io/github/actions/workflow/status/NormalSubgroup/sui-move-playground/ci.yml?style=for-the-badge&logo=github&logoColor=white)](https://github.com/NormalSubgroup/sui-move-playground/actions)
 <!-- [![Release](https://img.shields.io/github/v/release/NormalSubgroup/sui-move-playground?style=for-the-badge&logo=github&logoColor=white&color=10b981)](https://github.com/NormalSubgroup/sui-move-playground/releases) -->
 [![Stars](https://img.shields.io/github/stars/NormalSubgroup/sui-move-playground?style=for-the-badge&logo=github&logoColor=white&color=f59e0b)](https://github.com/NormalSubgroup/sui-move-playground/stargazers)
@@ -166,7 +166,7 @@ For major changes, please open a discussion first to ensure alignment with proje
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
