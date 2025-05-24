@@ -170,9 +170,17 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 🙏 Acknowledgments
 
+- 🏆 **[Sui Overflow 2025](https://sui.io/overflow)** - This project was created for the Sui Overflow hackathon
 - [Sui Foundation](https://sui.io/) for the amazing blockchain platform
-- [Move Language](https://move-language.github.io/) for the smart contract language
+<!-- - [Move Language](https://move-language.github.io/) for the smart contract language -->
 - All our [contributors](https://github.com/NormalSubgroup/sui-move-playground/contributors)
+
+### 👥 Hackathon Team Members
+
+- [@n-WN](https://github.com/n-WN) - Project Lead & Main Developer
+- [@xwxb](https://github.com/xwxb) - Project Lead & Main Developer
+- [@ChenXo0](https://github.com/ChenXo0) - Project Lead & Main Developer
+
 
 ## 📞 Support
 
