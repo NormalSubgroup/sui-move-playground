@@ -2,9 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-6366f1.svg?style=for-the-badge)](LICENSE)
 [![Build](https://img.shields.io/github/actions/workflow/status/NormalSubgroup/sui-move-playground/ci.yml?style=for-the-badge&logo=github&logoColor=white)](https://github.com/NormalSubgroup/sui-move-playground/actions)
-[![Release](https://img.shields.io/github/v/release/NormalSubgroup/sui-move-playground?style=for-the-badge&logo=github&logoColor=white&color=10b981)](https://github.com/NormalSubgroup/sui-move-playground/releases)
+<!-- [![Release](https://img.shields.io/github/v/release/NormalSubgroup/sui-move-playground?style=for-the-badge&logo=github&logoColor=white&color=10b981)](https://github.com/NormalSubgroup/sui-move-playground/releases) -->
 [![Stars](https://img.shields.io/github/stars/NormalSubgroup/sui-move-playground?style=for-the-badge&logo=github&logoColor=white&color=f59e0b)](https://github.com/NormalSubgroup/sui-move-playground/stargazers)
-[![Discord](https://img.shields.io/discord/1234567890?style=for-the-badge&logo=discord&logoColor=white&color=7c3aed)](https://discord.gg/sui-move-playground)
+<!-- [![Discord](https://img.shields.io/discord/1234567890?style=for-the-badge&logo=discord&logoColor=white&color=7c3aed)](https://discord.gg/sui-move-playground) -->
 [![Sui](https://img.shields.io/badge/Built_for-Sui-00d4ff?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMSA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDMgOUwxMC45MSA4LjI2TDEyIDJaIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K&logoColor=white)](https://sui.io)
 
 <div align="center">
@@ -176,8 +176,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 **Email**: support@sui-move-playground.com
-- 💬 **Discord**: [Join our community](https://discord.gg/sui-move-playground)
+- 📧 **Contact**: [n-WN](https://github.com/n-WN)
+<!-- - 💬 **Discord**: [Join our community](https://discord.gg/sui-move-playground) -->
 - 🐛 **Issues**: [GitHub Issues](https://github.com/NormalSubgroup/sui-move-playground/issues)
 
 ---
