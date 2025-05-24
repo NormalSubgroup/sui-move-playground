@@ -71,7 +71,7 @@ const OperationResult = ({ type, result, error, isLoading }: OperationResultProp
           )}
         </div>
         <div className="relative">
-          <pre className={`bg-panel p-3 rounded text-sm overflow-auto whitespace-pre-wrap border border-border ${isError ? 'text-error' : 'text-foreground/90'} ${isExpanded ? 'max-h-[400px]' : 'max-h-32'}`}>
+          <pre className={`bg-panel p-3 rounded text-sm overflow-auto whitespace-pre-wrap border border-border font-mono ${isError ? 'text-error' : 'text-foreground/90'} ${isExpanded ? 'max-h-[400px]' : 'max-h-32'}`}>
             {content}
           </pre>
           {hasLongContent && (

@@ -1,0 +1,22 @@
+[Unit]
+Description=Sui Move Playground Frontend Server
+Documentation=https://github.com/NormalSubgroup/sui-move-playground
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/ubuntu/sui-move-playground/web
+ExecStart=/usr/local/bin/bun server.js
+Restart=always
+RestartSec=10
+Environment=NODE_ENV=production
+Environment=PORT=80
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sui-move-playground
+
+[Install]
+WantedBy=multi-user.target 

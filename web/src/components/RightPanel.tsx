@@ -103,8 +103,6 @@ const RightPanel = ({
               onDeployMainnet={(command: string) => onDeploy(command, true)}
               isCompileSuccess={isCompileSuccess}
               isDeploying={deployResultData.isDeploying}
-              isTesting={false}
-              onTest={() => {}}
             />
             <div className="mt-3">
               <OperationResult

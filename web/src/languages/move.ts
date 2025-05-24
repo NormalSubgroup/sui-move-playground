@@ -149,14 +149,14 @@ export function registerMoveLanguage() {
 
   // 4. 配置自动完成
   monaco.languages.registerCompletionItemProvider('move', {
-    provideCompletionItems: (model, position) => {
+    provideCompletionItems: (_model, position) => {
       // 获取当前行的内容，用于上下文感知的自动完成
-      const textUntilPosition = model.getValueInRange({
-        startLineNumber: position.lineNumber,
-        startColumn: 1,
-        endLineNumber: position.lineNumber,
-        endColumn: position.column
-      });
+      // const textUntilPosition = model.getValueInRange({
+      //   startLineNumber: position.lineNumber,
+      //   startColumn: 1,
+      //   endLineNumber: position.lineNumber,
+      //   endColumn: position.column
+      // });
 
       const suggestions = [
         ...['module', 'struct', 'script', 'public', 'friend', 'native', 'fun', 'const'].map(keyword => ({

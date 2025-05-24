@@ -1,0 +1,25 @@
+[Unit]
+Description=Sui Move Playground API Server
+Documentation=https://github.com/NormalSubgroup/sui-move-playground
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/sui-move-playground/api
+ExecStart=/home/ubuntu/.cargo/bin/cargo run --release
+Restart=always
+RestartSec=10
+Environment=RUST_LOG=info
+Environment=RUST_BACKTRACE=1
+Environment=PATH=/home/ubuntu/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=RUSTUP_HOME=/home/ubuntu/.rustup
+Environment=CARGO_HOME=/home/ubuntu/.cargo
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sui-move-api
+
+[Install]
+WantedBy=multi-user.target 

@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { registerMoveLanguage } from '../languages/move'; // Import registerMoveLanguage
 
 interface CodeEditorProps {
   initialValue?: string;
@@ -296,42 +295,6 @@ const CodeEditor = ({ initialValue = '', onChange }: CodeEditorProps) => {
       formatOnPaste: true,
       formatOnType: true,
     });
-  };
-
-  // 添加调试函数，用于尝试重新应用Move主题
-  const debugApplyTheme = () => {
-    if (monacoRef.current && editorRef.current) {
-      console.log("调试：尝试重新应用Move主题");
-      
-      try {
-        const monaco = monacoRef.current;
-        const editor = editorRef.current;
-
-        // 确保当前模型使用move语言
-        const model = editor.getModel();
-        if (model) {
-          monaco.editor.setModelLanguage(model, 'move');
-          console.log("调试：已将模型语言设置为'move'");
-        }
-        
-        // 尝试显式设置主题
-        monaco.editor.setTheme('move-theme');
-        console.log("调试：已尝试重新设置主题为'move-theme'");
-        
-        // 刷新编辑器视图
-        editor.render(true);
-        console.log("调试：已尝试刷新编辑器视图");
-        
-        // 验证结果
-        if (model) {
-          console.log("调试：当前模型语言ID:", model.getLanguageId());
-        }
-      } catch (e) {
-        console.error("调试：应用主题时出错:", e);
-      }
-    } else {
-      console.error("调试：Monaco或Editor实例未初始化");
-    }
   };
 
   return (

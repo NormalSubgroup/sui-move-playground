@@ -19,7 +19,7 @@ const CompileResult = ({ result, error, isCompiling }: CompileResultProps) => {
     return (
       <div className="p-4 text-error">
         <h3 className="font-semibold mb-2">Compilation Error</h3>
-        <pre className="bg-panel p-3 rounded text-sm overflow-auto border border-border">{error}</pre>
+        <pre className="bg-panel p-3 rounded text-sm overflow-auto border border-border font-mono">{error}</pre>
       </div>
     );
   }
@@ -37,7 +37,7 @@ const CompileResult = ({ result, error, isCompiling }: CompileResultProps) => {
       <div className="p-4">
         <h3 className="font-semibold text-error mb-2">Compilation Failed</h3>
         {result.error_message && (
-          <pre className="bg-panel p-3 rounded text-sm overflow-auto border border-border text-error">{result.error_message}</pre>
+          <pre className="bg-panel p-3 rounded text-sm overflow-auto border border-border text-error font-mono">{result.error_message}</pre>
         )}
       </div>
     );
@@ -69,7 +69,7 @@ const CompileResult = ({ result, error, isCompiling }: CompileResultProps) => {
           <h4 className="font-medium mb-1 text-warning">Warnings:</h4>
           <ul className="list-disc pl-5 space-y-1 text-sm">
             {result.warnings.map((warning, index) => (
-              <li key={index} className="text-warning/90">{warning}</li>
+              <li key={index} className="text-warning/90 font-mono">{warning}</li>
             ))}
           </ul>
         </div>

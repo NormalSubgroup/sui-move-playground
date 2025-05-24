@@ -5,7 +5,6 @@ interface MainEditorPanelProps {
   sourceCode: string;
   onSourceCodeChange: (value: string) => void;
   fileName: string;
-  onFileNameChange: (value: string) => void;
   onCompile: () => void;
   isCompiling: boolean;
   initialEditorContent: string;
@@ -16,7 +15,6 @@ const MainEditorPanel = ({
   sourceCode,
   onSourceCodeChange,
   fileName,
-  onFileNameChange,
   onCompile,
   isCompiling,
   initialEditorContent,
@@ -28,10 +26,10 @@ const MainEditorPanel = ({
   const words = sourceCode.trim() ? sourceCode.trim().split(/\s+/).length : 0;
 
   return (
-    <div className={`p-4 h-full flex flex-col ${className}`}>
+    <div className={`p-4 min-h-[400px] h-full flex flex-col ${className}`}>
       {/* 编辑器信息栏 */}
-      <div className="flex items-center justify-between mb-3 pb-3 border-b border-border">
-        <div className="flex items-center space-x-4 text-sm text-foreground/70">
+      <div className="flex items-center justify-between mb-3 pb-3 border-b border-border flex-shrink-0">
+        <div className="flex items-center space-x-4 text-sm text-foreground/70 flex-wrap">
           <div className="flex items-center">
             <FileTextIcon className="w-4 h-4 mr-1.5" />
             <span className="font-medium text-foreground">{fileName || 'untitled.move'}</span>
@@ -70,7 +68,7 @@ const MainEditorPanel = ({
         </button>
       </div>
       {/* 编辑器占据剩余空间 */}
-      <div className="flex-grow h-[calc(100%-70px)] rounded-md overflow-hidden shadow-inner bg-background border border-border">
+      <div className="flex-1 min-h-[300px] rounded-md overflow-hidden shadow-inner bg-background border border-border">
         <CodeEditor
           initialValue={initialEditorContent}
           onChange={onSourceCodeChange}

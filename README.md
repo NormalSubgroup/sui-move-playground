@@ -140,7 +140,7 @@ journalctl -f -u sui-move-playground
 
 - 🚀 **[Quick Deployment Guide](DEPLOYMENT_SUMMARY.md)**
 - 📘 **[Detailed Production Guide](PRODUCTION_DEPLOYMENT.md)**
-- 🔧 **[API Documentation](docs/api.md)**
+- 🔧 **[API Documentation](api_documentation.md)** - 完整的后端API参考文档
 - 🎨 **[Frontend Guide](docs/frontend.md)**
 
 ## 🤝 Contributing

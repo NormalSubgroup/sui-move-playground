@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "bun server.js",
+    "serve": "bun server.js"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

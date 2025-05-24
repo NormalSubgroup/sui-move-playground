@@ -34,3 +34,18 @@ code, pre {
 ::-webkit-scrollbar-thumb:hover {
   background: theme('colors.accent / 0.8');
 }
+
+/* 响应式布局修复 */
+@media (max-width: 1024px) {
+  .min-h-screen {
+    min-height: 100vh;
+    min-height: 100dvh; /* 对支持的浏览器使用动态视口高度 */
+  }
+}
+
+/* 确保在小屏幕上编辑器有足够的高度 */
+@media (max-width: 768px) {
+  .monaco-editor {
+    min-height: 300px !important;
+  }
+}

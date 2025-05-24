@@ -186,40 +186,45 @@ function App() {
         {/* Global actions could go here, e.g., Settings, Help */}
       </header>
       
-      <main className="flex-1 grid grid-cols-1 md:grid-cols-[280px_1fr] lg:grid-cols-[280px_1fr_380px] gap-2 p-2 overflow-hidden">
-        {/* FileSystemPanel will be styled with panel background, border, etc. */}
-        <FileSystemPanel
-          onExampleSelect={handleExampleSelect}
-          onFileOpen={handleFileOpen}
-          currentFileName={fileName}
-          className="bg-panel border border-border rounded-md shadow-sm"
-          onOpenAddressesModal={() => setIsAddressesModalOpen(true)}
-          currentAddressesToml={addressesToml}
-        />
+      <main className="flex-1 flex flex-col lg:grid lg:grid-cols-[280px_1fr_380px] gap-2 p-2 min-h-0">
+        {/* FileSystemPanel - responsive design */}
+        <div className="lg:contents">
+          <FileSystemPanel
+            onExampleSelect={handleExampleSelect}
+            onFileOpen={handleFileOpen}
+            currentFileName={fileName}
+            className="bg-panel border border-border rounded-md shadow-sm h-auto lg:h-full"
+            onOpenAddressesModal={() => setIsAddressesModalOpen(true)}
+            currentAddressesToml={addressesToml}
+          />
+        </div>
 
-        {/* MainEditorPanel will contain the editor and its controls */}
-        <MainEditorPanel
-          key={editorKey} // Key to re-mount editor when source changes externally
-          sourceCode={sourceCode}
-          onSourceCodeChange={setSourceCode}
-          fileName={fileName}
-          onFileNameChange={setFileName}
-          onCompile={handleCompile}
-          isCompiling={compiler.isCompiling}
-          initialEditorContent={sourceCode} // Pass initial content for editor
-          className="bg-panel border border-border rounded-md shadow-sm flex flex-col" // Added flex flex-col for internal layout
-        />
+        {/* MainEditorPanel - takes most space on mobile */}
+        <div className="flex-1 min-h-[400px] lg:min-h-0">
+          <MainEditorPanel
+            key={editorKey} // Key to re-mount editor when source changes externally
+            sourceCode={sourceCode}
+            onSourceCodeChange={setSourceCode}
+            fileName={fileName}
+            onCompile={handleCompile}
+            isCompiling={compiler.isCompiling}
+            initialEditorContent={sourceCode} // Pass initial content for editor
+            className="bg-panel border border-border rounded-md shadow-sm flex flex-col h-full" // Added flex flex-col for internal layout
+          />
+        </div>
 
-        {/* RightPanel for results and actions */}
-        <RightPanel
-          compileResultData={compiler}
-          deployResultData={deployer}
-          testResultData={tester}
-          onTest={handleTest}
-          onDeploy={handleDeploy}
-          isCompileSuccess={compiler.result?.success ?? false}
-          className="bg-panel border border-border rounded-md shadow-sm"
-        />
+        {/* RightPanel - stacks below on mobile, side on desktop */}
+        <div className="h-auto min-h-[300px] lg:h-full">
+          <RightPanel
+            compileResultData={compiler}
+            deployResultData={deployer}
+            testResultData={tester}
+            onTest={handleTest}
+            onDeploy={handleDeploy}
+            isCompileSuccess={compiler.result?.success ?? false}
+            className="bg-panel border border-border rounded-md shadow-sm h-full"
+          />
+        </div>
 
         {/* 新增：EditAddressesModal */}
         <EditAddressesModal
