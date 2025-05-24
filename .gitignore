@@ -1,0 +1,123 @@
+# =======================
+# Sui Move Playground
+# =======================
+
+# 前端相关 (web/)
+web/node_modules/
+web/dist/
+web/.env
+web/.env.local
+web/.env.development.local
+web/.env.test.local
+web/.env.production.local
+web/npm-debug.log*
+web/yarn-debug.log*
+web/yarn-error.log*
+web/pnpm-debug.log*
+web/lerna-debug.log*
+web/.vscode/
+web/.DS_Store
+web/coverage/
+
+# 后端相关 (api/)
+api/target/
+api/Cargo.lock
+api/.env
+api/.cargo/
+
+# Move 编译产物
+**/build/
+**/sources/
+**/.move/
+**/Move.lock
+
+# 临时编译目录
+/tmp/move-web-compiler-*/
+
+# 日志文件
+*.log
+logs/
+*.log.*
+
+# 系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE 配置文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# 密钥和敏感信息
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+.secrets/
+
+# 部署相关
+.env.production
+.env.staging
+deploy.log
+
+# 包管理器
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 运行时
+pid
+*.pid
+*.seed
+*.pid.lock
+
+# 覆盖率报告
+coverage/
+*.lcov
+.nyc_output
+
+# 依赖目录
+node_modules/
+
+# 可选的npm缓存目录
+.npm
+
+# 可选的eslint缓存
+.eslintcache
+
+# 输出目录
+dist/
+build/
+out/
+
+# Rust相关
+# 编译产物
+target/
+# 备份文件
+**/*.rs.bk
+# Cargo相关
+Cargo.lock
+
+# Move相关
+# 编译输出
+build/
+# Move包管理
+Move.lock
+
+# 本地配置
+.local/
+local.config.* 
