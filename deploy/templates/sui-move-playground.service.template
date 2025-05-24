@@ -8,9 +8,9 @@ Wants=network.target
 Type=simple
 User=root
 Group=root
-WorkingDirectory=/home/ubuntu/sui-move-playground/web
+WorkingDirectory=__PROJECT_ROOT__/web
 ExecStartPre=/bin/bash -c 'command -v bun >/dev/null || { echo "Error: bun not found in PATH"; exit 1; }'
-ExecStart=/bin/bash -c 'cd /home/ubuntu/sui-move-playground/web && exec $(command -v bun) server.js'
+ExecStart=/bin/bash -c 'cd __PROJECT_ROOT__/web && exec $(command -v bun) server.js'
 Restart=always
 RestartSec=10
 Environment=NODE_ENV=production

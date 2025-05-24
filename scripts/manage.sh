@@ -11,6 +11,37 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
+# 动态检测项目路径和工具路径
+detect_project_paths() {
+    # 获取脚本所在目录的父目录作为项目根目录
+    PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+    CURRENT_USER=$(whoami)
+    USER_HOME="$HOME"
+    
+    # 检测Bun路径
+    if command -v bun &> /dev/null; then
+        BUN_CMD="bun"
+    elif [ -f "$USER_HOME/.bun/bin/bun" ]; then
+        BUN_CMD="$USER_HOME/.bun/bin/bun"
+    elif [ -f "/usr/local/bin/bun" ]; then
+        BUN_CMD="/usr/local/bin/bun"
+    else
+        BUN_CMD=""
+    fi
+    
+    # 检测Cargo路径
+    if command -v cargo &> /dev/null; then
+        CARGO_CMD="cargo"
+    elif [ -f "$USER_HOME/.cargo/bin/cargo" ]; then
+        CARGO_CMD="$USER_HOME/.cargo/bin/cargo"
+    else
+        CARGO_CMD=""
+    fi
+}
+
+# 初始化路径检测
+detect_project_paths
+
 show_help() {
     echo -e "${BLUE}🚀 Sui Move Playground 管理脚本${NC}"
     echo "============================================"
@@ -85,16 +116,12 @@ start_frontend() {
             return 0
         fi
         
-        cd web
+        cd "$PROJECT_ROOT/web"
         
         # 检查构建文件
         if [ ! -d "dist" ]; then
             echo -e "${YELLOW}📦 构建前端...${NC}"
-            if command -v bun &> /dev/null; then
-                BUN_CMD="bun"
-            elif [ -f "/home/ubuntu/.bun/bin/bun" ]; then
-                BUN_CMD="/home/ubuntu/.bun/bin/bun"
-            else
+            if [ -z "$BUN_CMD" ]; then
                 echo -e "${RED}❌ 未找到bun命令${NC}"
                 return 1
             fi
@@ -103,7 +130,11 @@ start_frontend() {
         
         # 启动前端服务器
         if [[ $EUID -eq 0 ]]; then
-            nohup /usr/local/bin/bun server.js > /dev/null 2>&1 &
+            if [ -z "$BUN_CMD" ]; then
+                echo -e "${RED}❌ 未找到bun命令${NC}"
+                return 1
+            fi
+            nohup $BUN_CMD server.js > /dev/null 2>&1 &
         else
             echo -e "${RED}❌ 启动前端服务需要root权限（端口80）${NC}"
             return 1
@@ -355,8 +386,10 @@ build_project() {
     cd web
     if command -v bun &> /dev/null; then
         BUN_CMD="bun"
-    elif [ -f "/home/ubuntu/.bun/bin/bun" ]; then
-        BUN_CMD="/home/ubuntu/.bun/bin/bun"
+    elif [ -f "$HOME/.bun/bin/bun" ]; then
+        BUN_CMD="$HOME/.bun/bin/bun"
+    elif [ -f "/usr/local/bin/bun" ]; then
+        BUN_CMD="/usr/local/bin/bun"
     else
         echo -e "${RED}❌ 未找到bun命令${NC}"
         exit 1
@@ -392,6 +425,34 @@ show_logs() {
     fi
 }
 
+generate_service_files() {
+    echo -e "${CYAN}🔧 生成服务配置文件...${NC}"
+    
+    # 生成前端服务文件
+    if [ -f "deploy/sui-move-playground.service.template" ]; then
+        sed "s|__PROJECT_ROOT__|$PROJECT_ROOT|g" \
+            "deploy/sui-move-playground.service.template" \
+            > "deploy/sui-move-playground.service"
+        echo -e "${GREEN}✅ 前端服务配置已生成${NC}"
+    else
+        echo -e "${RED}❌ 未找到前端服务模板文件${NC}"
+        return 1
+    fi
+    
+    # 生成后端服务文件
+    if [ -f "deploy/sui-move-api.service.template" ]; then
+        sed -e "s|__PROJECT_ROOT__|$PROJECT_ROOT|g" \
+            -e "s|__CURRENT_USER__|$CURRENT_USER|g" \
+            -e "s|__USER_HOME__|$USER_HOME|g" \
+            "deploy/sui-move-api.service.template" \
+            > "deploy/sui-move-api.service"
+        echo -e "${GREEN}✅ 后端服务配置已生成${NC}"
+    else
+        echo -e "${RED}❌ 未找到后端服务模板文件${NC}"
+        return 1
+    fi
+}
+
 install_services() {
     echo -e "${BLUE}📦 安装系统服务...${NC}"
     echo "============================================"
@@ -401,6 +462,9 @@ install_services() {
         echo -e "${YELLOW}请使用: sudo ./manage.sh install${NC}"
         exit 1
     fi
+    
+    # 生成服务配置文件
+    generate_service_files
     
     # 停止现有服务
     stop_all

@@ -6,18 +6,18 @@ Wants=network.target
 
 [Service]
 Type=simple
-User=ubuntu
-Group=ubuntu
-WorkingDirectory=/home/ubuntu/sui-move-playground/api
+User=__CURRENT_USER__
+Group=__CURRENT_USER__
+WorkingDirectory=__PROJECT_ROOT__/api
 ExecStartPre=/bin/bash -c 'command -v cargo >/dev/null || { echo "Error: cargo not found in PATH"; exit 1; }'
-ExecStart=/bin/bash -c 'cd /home/ubuntu/sui-move-playground/api && exec $(command -v cargo) run --release'
+ExecStart=/bin/bash -c 'cd __PROJECT_ROOT__/api && exec $(command -v cargo) run --release'
 Restart=always
 RestartSec=10
 Environment=RUST_LOG=info
 Environment=RUST_BACKTRACE=1
-Environment=PATH=/home/ubuntu/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-Environment=RUSTUP_HOME=/home/ubuntu/.rustup
-Environment=CARGO_HOME=/home/ubuntu/.cargo
+Environment=PATH=__USER_HOME__/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=RUSTUP_HOME=__USER_HOME__/.rustup
+Environment=CARGO_HOME=__USER_HOME__/.cargo
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=sui-move-api
