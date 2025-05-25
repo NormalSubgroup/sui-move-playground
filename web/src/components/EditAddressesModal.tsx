@@ -14,7 +14,7 @@ interface EditAddressesModalProps {
   currentSourceCode: string;
   initialAddressesToml: string;
   onSave: (addressesToml: string) => void;
-  suggestedAddressName?: string;
+  suggestedAddressName?: string | null;
 }
 
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
