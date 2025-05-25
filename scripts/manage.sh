@@ -50,7 +50,7 @@ show_help() {
     echo "可用命令:"
     echo -e "  ${GREEN}start${NC}     - 启动所有服务（前端+后端）"
     echo -e "  ${GREEN}stop${NC}      - 停止所有服务"
-    echo -e "  ${GREEN}restart${NC}   - 重启所有服务"
+    echo -e "  ${GREEN}restart${NC}   - 重启所有服务（前端会重新构建）"
     echo -e "  ${GREEN}status${NC}    - 查看服务状态"
     echo -e "  ${GREEN}test${NC}      - 运行完整测试"
     echo -e "  ${GREEN}build${NC}     - 构建项目"
@@ -63,10 +63,14 @@ show_help() {
     echo -e "  ${CYAN}frontend [start|stop|restart|status]${NC} - 管理前端服务"
     echo -e "  ${CYAN}backend [start|stop|restart|status]${NC}  - 管理后端服务"
     echo
+    echo "注意："
+    echo -e "  ${YELLOW}• frontend restart 会自动重新构建前端代码${NC}"
+    echo -e "  ${YELLOW}• backend restart 会自动重新构建后端代码${NC}"
+    echo
     echo "示例:"
     echo "  sudo ./manage.sh start"
     echo "  ./manage.sh status"
-    echo "  ./manage.sh frontend restart"
+    echo "  sudo ./manage.sh frontend restart  # 重启并重新构建前端"
     echo "  ./manage.sh backend status"
 }
 
@@ -97,35 +101,96 @@ get_backend_pid() {
 
 # 前端管理函数
 start_frontend() {
+    local force_build="$1"
     echo -e "${BLUE}🚀 启动前端服务...${NC}"
+    echo -e "${CYAN}   📍 项目路径: $PROJECT_ROOT/web${NC}"
     
     if check_systemd_installed; then
+        echo -e "${CYAN}   🔧 使用SystemD模式启动...${NC}"
+        
+        # 如果需要重新构建，先构建前端
+        if [ "$force_build" == "rebuild" ]; then
+            echo -e "${YELLOW}📦 重新构建前端...${NC}"
+            echo -e "${CYAN}   📂 切换到前端目录...${NC}"
+            cd "$PROJECT_ROOT/web"
+            
+            echo -e "${CYAN}   🗑️  清理旧构建文件...${NC}"
+            rm -rf dist 2>/dev/null || true
+            
+            if [ -z "$BUN_CMD" ]; then
+                echo -e "${RED}❌ 未找到bun命令${NC}"
+                return 1
+            fi
+            
+            echo -e "${CYAN}   📥 安装依赖包...${NC}"
+            if ! $BUN_CMD install; then
+                echo -e "${RED}❌ 依赖安装失败${NC}"
+                return 1
+            fi
+            
+            echo -e "${CYAN}   🔨 构建项目...${NC}"
+            if ! $BUN_CMD run build; then
+                echo -e "${RED}❌ 项目构建失败${NC}"
+                return 1
+            fi
+            echo -e "${GREEN}   ✅ 构建完成${NC}"
+            cd ..
+        fi
+        
+        echo -e "${CYAN}   🚀 启动SystemD服务...${NC}"
         sudo systemctl start sui-move-playground
+        echo -e "${CYAN}   ⏳ 等待服务启动 (2秒)...${NC}"
         sleep 2
         if systemctl is-active --quiet sui-move-playground; then
-            echo -e "${GREEN}✅ 前端服务启动成功${NC}"
+            echo -e "${GREEN}✅ 前端服务启动成功 (SystemD)${NC}"
+            echo -e "${GREEN}   🌐 访问地址: http://localhost${NC}"
         else
             echo -e "${RED}❌ 前端服务启动失败${NC}"
+            echo -e "${YELLOW}   💡 检查日志: journalctl -u sui-move-playground${NC}"
             return 1
         fi
     else
+        echo -e "${CYAN}   🔧 使用手动模式启动...${NC}"
         # 手动启动模式
+        echo -e "${CYAN}   🔍 检查现有进程...${NC}"
         PID=$(get_frontend_pid)
         if [ ! -z "$PID" ] && [ "$PID" != "0" ]; then
             echo -e "${YELLOW}⚠️  前端服务已在运行 (PID: $PID)${NC}"
             return 0
         fi
         
+        echo -e "${CYAN}   📂 切换到前端目录...${NC}"
         cd "$PROJECT_ROOT/web"
         
-        # 检查构建文件
-        if [ ! -d "dist" ]; then
-            echo -e "${YELLOW}📦 构建前端...${NC}"
+        # 检查是否需要构建前端
+        if [ ! -d "dist" ] || [ "$force_build" == "rebuild" ]; then
+            if [ "$force_build" == "rebuild" ]; then
+                echo -e "${YELLOW}📦 重新构建前端...${NC}"
+                echo -e "${CYAN}   🗑️  清理旧构建文件...${NC}"
+                rm -rf dist 2>/dev/null || true
+            else
+                echo -e "${YELLOW}📦 构建前端...${NC}"
+            fi
+            
             if [ -z "$BUN_CMD" ]; then
                 echo -e "${RED}❌ 未找到bun命令${NC}"
                 return 1
             fi
-            $BUN_CMD install && $BUN_CMD run build
+            
+            echo -e "${CYAN}   📥 安装依赖包...${NC}"
+            if ! $BUN_CMD install; then
+                echo -e "${RED}❌ 依赖安装失败${NC}"
+                return 1
+            fi
+            
+            echo -e "${CYAN}   🔨 构建项目...${NC}"
+            if ! $BUN_CMD run build; then
+                echo -e "${RED}❌ 项目构建失败${NC}"
+                return 1
+            fi
+            echo -e "${GREEN}   ✅ 构建完成${NC}"
+        else
+            echo -e "${CYAN}   ♻️  使用现有构建文件...${NC}"
         fi
         
         # 启动前端服务器
@@ -134,18 +199,22 @@ start_frontend() {
                 echo -e "${RED}❌ 未找到bun命令${NC}"
                 return 1
             fi
+            echo -e "${CYAN}   🌐 启动Web服务器 (端口80)...${NC}"
             nohup $BUN_CMD server.js > /dev/null 2>&1 &
         else
             echo -e "${RED}❌ 启动前端服务需要root权限（端口80）${NC}"
             return 1
         fi
         
+        echo -e "${CYAN}   ⏳ 等待服务启动 (2秒)...${NC}"
         sleep 2
         PID=$(get_frontend_pid)
         if [ ! -z "$PID" ] && [ "$PID" != "0" ]; then
             echo -e "${GREEN}✅ 前端服务启动成功 (PID: $PID)${NC}"
+            echo -e "${GREEN}   🌐 访问地址: http://localhost${NC}"
         else
             echo -e "${RED}❌ 前端服务启动失败${NC}"
+            echo -e "${YELLOW}   💡 检查端口占用: netstat -tulnp | grep :80${NC}"
             return 1
         fi
         cd ..
@@ -258,7 +327,8 @@ restart_all() {
     echo -e "${CYAN}🔄 重启所有服务...${NC}"
     stop_all
     sleep 2
-    start_all
+    start_backend
+    start_frontend "rebuild"
 }
 
 show_status() {
@@ -570,7 +640,7 @@ case "$1" in
     restart)
         if [[ "$2" == "frontend" ]] || [[ "$2" == "web" ]]; then
             [[ $EUID -ne 0 ]] && echo -e "${RED}❌ 需要root权限${NC}" && exit 1
-            stop_frontend && start_frontend
+            stop_frontend && start_frontend "rebuild"
         elif [[ "$2" == "backend" ]] || [[ "$2" == "api" ]]; then
             stop_backend && start_backend
         else
@@ -585,7 +655,7 @@ case "$1" in
         case "$2" in
             start) [[ $EUID -ne 0 ]] && echo -e "${RED}❌ 需要root权限${NC}" && exit 1; start_frontend ;;
             stop) [[ $EUID -ne 0 ]] && echo -e "${RED}❌ 需要root权限${NC}" && exit 1; stop_frontend ;;
-            restart) [[ $EUID -ne 0 ]] && echo -e "${RED}❌ 需要root权限${NC}" && exit 1; stop_frontend && start_frontend ;;
+            restart) [[ $EUID -ne 0 ]] && echo -e "${RED}❌ 需要root权限${NC}" && exit 1; stop_frontend && start_frontend "rebuild" ;;
             status) show_status ;;
             *) echo -e "${RED}❌ 未知子命令: $2${NC}"; show_help; exit 1 ;;
         esac
