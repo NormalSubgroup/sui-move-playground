@@ -33,14 +33,29 @@ const FileSystemPanel = ({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // 检查文件大小（限制为5MB）
+      if (file.size > 5 * 1024 * 1024) {
+        alert('文件太大，请选择小于5MB的文件');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const content = e.target?.result as string;
-        if (content) {
+        if (content !== null && content !== undefined) {
           onFileOpen(content, file.name);
+        } else {
+          alert('无法读取文件内容');
         }
       };
-      reader.readAsText(file);
+      reader.onerror = () => {
+        alert('读取文件时发生错误');
+      };
+      reader.readAsText(file, 'UTF-8'); // 明确指定编码
+    }
+    // 清空input值，允许重复选择同一文件
+    if (event.target) {
+      event.target.value = '';
     }
   };
 
@@ -71,7 +86,7 @@ const FileSystemPanel = ({
             <input
               ref={fileInputRef}
               type="file"
-              accept=".move,.txt"
+              accept=".move,.txt,.rs,.toml,.md,.json"
               className="hidden"
               onChange={handleFileChange}
             />
@@ -150,7 +165,7 @@ const FileSystemPanel = ({
             <input
               ref={fileInputRef}
               type="file"
-              accept=".move,.txt"
+              accept=".move,.txt,.rs,.toml,.md,.json"
               className="hidden"
               onChange={handleFileChange}
             />

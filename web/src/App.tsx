@@ -45,6 +45,7 @@ function App() {
   
   // 新增：地址配置相关的状态
   const [isAddressesModalOpen, setIsAddressesModalOpen] = useState(false);
+  const [suggestedAddressName, setSuggestedAddressName] = useState<string | null>(null);
   const [addressesToml, setAddressesToml] = useState<string>(() => {
     // Load from localStorage on initial render
     return localStorage.getItem('moveIdeAddressesToml') || '';
@@ -80,68 +81,72 @@ function App() {
   const checkAddressesAndCompile = async () => {
     let currentAddressesToml = addressesToml;
     let normalAddresses = parseNormalAddressesFromToml(currentAddressesToml);
-    const hasZeroAddress = normalAddresses.some(addr => addr.value.trim() === '0x0');
 
-    // 从源代码中提取模块名
+    // 从源代码中提取用户意图的地址名（模块声明中的第一部分）
     const lines = sourceCode.split('\n').slice(0, 10);
-    let moduleName: string | null = null;
+    let intendedAddressName: string | null = null;
     for (const line of lines) {
       const trimmedLine = line.trim();
       if (trimmedLine.startsWith('module')) {
-        const match = trimmedLine.match(/^module\s+([a-zA-Z_][a-zA-Z0-9_]*)(::|\s*\{)/);
+        // 匹配 module address_name::module_name 格式
+        const match = trimmedLine.match(/^module\s+([a-zA-Z_][a-zA-Z0-9_]*)::/);
         if (match && match[1]) {
-          moduleName = match[1];
+          intendedAddressName = match[1];
           break;
         }
       }
     }
 
-    // 检查地址配置
-    if (!currentAddressesToml.trim() || !hasZeroAddress) {
-      if (moduleName) {
-        const autoAddressEntry = `${moduleName} = "0x0"`;
-        let message = "";
-        let title = "";
-        
-        if (!currentAddressesToml.trim()) {
-          title = "地址配置为空";
-          message = `检测到模块名称为 "${moduleName}"，是否添加默认地址配置？\n\n${autoAddressEntry}`;
-        } else if (!hasZeroAddress) {
-          title = "缺少默认地址";
-          message = `当前配置中缺少默认地址。是否为模块 "${moduleName}" 添加默认地址？\n\n${autoAddressEntry}`;
-        }
-
-        if (message) {
-          setConfirmModalConfig({
-            isOpen: true,
-            title,
-            message,
-            variant: 'warning',
-            onConfirm: () => {
-              let newAddressesToml = currentAddressesToml;
-              if (currentAddressesToml.includes('[addresses]')) {
-                newAddressesToml = currentAddressesToml.replace('[addresses]', `[addresses]\n${autoAddressEntry}`);
-              } else if (currentAddressesToml.trim()) {
-                newAddressesToml = `[addresses]\n${autoAddressEntry}\n\n${currentAddressesToml}`;
-              } else {
-                newAddressesToml = `[addresses]\n${autoAddressEntry}\n`;
-              }
-              setAddressesToml(newAddressesToml);
-              compiler.compile(sourceCode, fileName, newAddressesToml);
-            }
-          });
-          return;
-        }
-      } else if (!currentAddressesToml.trim()) {
+    // 检查地址配置情况
+    if (!intendedAddressName) {
+      // 如果没有检测到意图地址名，但地址配置为空，提示用户手动配置
+      if (!currentAddressesToml.trim()) {
         setConfirmModalConfig({
           isOpen: true,
           title: "地址配置缺失",
-          message: "未能检测到模块名称，且地址配置为空。是否打开地址配置界面？",
+          message: "未能检测到模块中的地址名称，且地址配置为空。请手动配置地址。",
           variant: 'warning',
           onConfirm: () => setIsAddressesModalOpen(true)
         });
         return;
       }
+      // 如果有地址配置但检测不到意图地址，直接编译
+      await compiler.compile(sourceCode, fileName, currentAddressesToml);
+      return;
+    }
+
+    // 检查意图地址是否在已配置地址中
+    const foundAddress = normalAddresses.find(addr => addr.name === intendedAddressName);
+
+    if (!currentAddressesToml.trim()) {
+      // 情况a: 配置的地址是空，提示用户自动添加当前意图地址
+      const autoAddressEntry = `${intendedAddressName} = "0x0"`;
+      setConfirmModalConfig({
+        isOpen: true,
+        title: "地址配置为空",
+        message: `检测到代码中使用的地址名称为 "${intendedAddressName}"，是否添加默认地址配置？\n\n${autoAddressEntry}`,
+        variant: 'warning',
+        onConfirm: () => {
+          const newAddressesToml = `[addresses]\n${autoAddressEntry}\n`;
+          setAddressesToml(newAddressesToml);
+          compiler.compile(sourceCode, fileName, newAddressesToml);
+        }
+      });
+      return;
+    } else if (!foundAddress) {
+      // 情况b: 检测用户意图地址是否能在已配置地址找到，如果不能，阻止编译，弹出地址配置框
+      setConfirmModalConfig({
+        isOpen: true,
+        title: "地址配置不匹配",
+        message: `代码中使用的地址名称 "${intendedAddressName}" 在当前地址配置中未找到。请配置此地址后再编译。`,
+        variant: 'danger',
+        onConfirm: () => {
+          // 打开地址配置框，并传递意图地址名以便快速添加
+          setSuggestedAddressName(intendedAddressName);
+          setIsAddressesModalOpen(true);
+        }
+      });
+      return;
     }
 
     // 如果一切正常，直接编译
@@ -229,10 +234,14 @@ function App() {
         {/* 新增：EditAddressesModal */}
         <EditAddressesModal
           isOpen={isAddressesModalOpen}
-          onClose={() => setIsAddressesModalOpen(false)}
+          onClose={() => {
+            setIsAddressesModalOpen(false);
+            setSuggestedAddressName(null); // 关闭时清空建议的地址名
+          }}
           currentSourceCode={sourceCode}
           initialAddressesToml={addressesToml}
           onSave={handleSaveAddresses}
+          suggestedAddressName={suggestedAddressName}
         />
 
         <ConfirmModal

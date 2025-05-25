@@ -14,20 +14,19 @@ interface EditAddressesModalProps {
   currentSourceCode: string;
   initialAddressesToml: string;
   onSave: (addressesToml: string) => void;
+  suggestedAddressName?: string;
 }
 
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-const extractModuleNameFromSource = (source: string): string | null => {
-  const lines = source.split('\n').slice(0, 20); // Check more lines
+const extractIntendedAddressNameFromSource = (source: string): string | null => {
+  const lines = source.split('\n').slice(0, 20);
   for (const line of lines) {
     const trimmedLine = line.trim();
     if (trimmedLine.startsWith('module')) {
-      const match = trimmedLine.match(/^module\s+([a-zA-Z_][a-zA-Z0-9_::]*)\s*(?:\{|uses|friends)/);
+      const match = trimmedLine.match(/^module\s+([a-zA-Z_][a-zA-Z0-9_]*)::/);
       if (match && match[1]) {
-        // If module name contains ::, take the last part as the alias.
-        const parts = match[1].split('::');
-        return parts[parts.length - 1];
+        return match[1];
       }
     }
   }
@@ -97,12 +96,13 @@ const EditAddressesModal: React.FC<EditAddressesModalProps> = ({
   currentSourceCode,
   initialAddressesToml,
   onSave,
+  suggestedAddressName,
 }) => {
   const [normalAddresses, setNormalAddresses] = useState<AddressEntry[]>([]);
   const [devAddresses, setDevAddresses] = useState<AddressEntry[]>([]);
   
-  const [moduleName, setModuleName] = useState<string | null>(null);
-  const [moduleAddressStatus, setModuleAddressStatus] = useState<{ message: string; type: 'info' | 'warning' | 'error' } | null>(null);
+  const [intendedAddressName, setIntendedAddressName] = useState<string | null>(null);
+  const [addressStatus, setAddressStatus] = useState<{ message: string; type: 'info' | 'warning' | 'error' } | null>(null);
 
   const [confirmConfig, setConfirmConfig] = useState<{
     isOpen: boolean;
@@ -122,41 +122,40 @@ const EditAddressesModal: React.FC<EditAddressesModalProps> = ({
       const { normal, dev } = parseAddressesToml(initialAddressesToml);
       setNormalAddresses(normal);
       setDevAddresses(dev);
-      const extractedName = extractModuleNameFromSource(currentSourceCode);
-      setModuleName(extractedName);
+      const extractedName = extractIntendedAddressNameFromSource(currentSourceCode);
+      setIntendedAddressName(extractedName || suggestedAddressName || null);
     } else {
       // Reset when closed
-      setModuleAddressStatus(null);
-      setModuleName(null);
+      setAddressStatus(null);
+      setIntendedAddressName(null);
     }
-  }, [initialAddressesToml, isOpen, currentSourceCode]);
+  }, [initialAddressesToml, isOpen, currentSourceCode, suggestedAddressName]);
 
   useEffect(() => {
-    if (!isOpen || !moduleName) {
-      setModuleAddressStatus(null);
+    if (!isOpen || !intendedAddressName) {
+      setAddressStatus(null);
       return;
     }
 
-    const moduleAddrEntry = normalAddresses.find(addr => addr.name === moduleName);
+    const addressEntry = normalAddresses.find(addr => addr.name === intendedAddressName);
 
-    if (!moduleAddrEntry) {
-      setModuleAddressStatus({
-        message: `当前模块 "${moduleName}" 未在普通地址中配置。建议添加：${moduleName} = "0x0"`,
+    if (!addressEntry) {
+      setAddressStatus({
+        message: `代码中使用的地址名称 "${intendedAddressName}" 未在普通地址中配置。建议添加：${intendedAddressName} = "0x0"`,
         type: 'warning',
       });
-    } else if (moduleAddrEntry.value.toLowerCase() !== '0x0') {
-      setModuleAddressStatus({
-        message: `当前模块 "${moduleName}" 的地址值应为 "0x0"，但配置为 "${moduleAddrEntry.value}"。这可能导致编译问题。`,
+    } else if (addressEntry.value.toLowerCase() !== '0x0') {
+      setAddressStatus({
+        message: `地址 "${intendedAddressName}" 的值应为 "0x0"，但配置为 "${addressEntry.value}"。这可能导致编译问题。`,
         type: 'error',
       });
     } else {
-      setModuleAddressStatus({
-        message: `当前模块 "${moduleName}" 地址配置正确: ${moduleName} = "0x0"`,
+      setAddressStatus({
+        message: `地址 "${intendedAddressName}" 配置正确: ${intendedAddressName} = "0x0"`,
         type: 'info',
       });
     }
-  }, [isOpen, moduleName, normalAddresses, currentSourceCode]);
-
+  }, [isOpen, intendedAddressName, normalAddresses, currentSourceCode]);
 
   const handleAddAddress = (type: 'normal' | 'dev') => {
     const newAddress = { id: generateId(), name: '', value: '' };
@@ -215,12 +214,12 @@ const EditAddressesModal: React.FC<EditAddressesModalProps> = ({
     const generalConflicts = checkGeneralAddressConflicts();
     let currentModuleConflictMessage = '';
 
-    if (moduleName) {
-        const moduleAddrEntry = normalAddresses.find(addr => addr.name === moduleName);
-        if (!moduleAddrEntry) {
-            currentModuleConflictMessage = `模块 "${moduleName}" 仍未在普通地址中配置 (建议 ${moduleName} = "0x0")。`;
-        } else if (moduleAddrEntry.value.toLowerCase() !== '0x0') {
-            currentModuleConflictMessage = `模块 "${moduleName}" 的地址值仍为 "${moduleAddrEntry.value}" (应为 "0x0")。`;
+    if (intendedAddressName) {
+        const addressEntry = normalAddresses.find(addr => addr.name === intendedAddressName);
+        if (!addressEntry) {
+            currentModuleConflictMessage = `地址 "${intendedAddressName}" 未在普通地址中配置。建议添加：${intendedAddressName} = "0x0"`;
+        } else if (addressEntry.value.toLowerCase() !== '0x0') {
+            currentModuleConflictMessage = `地址 "${intendedAddressName}" 的值应为 "0x0"，但配置为 "${addressEntry.value}"。这可能导致编译问题。`;
         }
     }
     
@@ -307,19 +306,29 @@ const EditAddressesModal: React.FC<EditAddressesModalProps> = ({
   
   let statusIcon = null;
   let statusColor = 'text-slate-400';
-  if (moduleAddressStatus) {
-    if (moduleAddressStatus.type === 'info') {
+  if (addressStatus) {
+    if (addressStatus.type === 'info') {
       statusIcon = <InfoCircledIcon className="w-5 h-5 mr-2 text-green-400" />;
       statusColor = 'text-green-400';
-    } else if (moduleAddressStatus.type === 'warning') {
+    } else if (addressStatus.type === 'warning') {
       statusIcon = <ExclamationTriangleIcon className="w-5 h-5 mr-2 text-amber-400" />;
       statusColor = 'text-amber-400';
-    } else if (moduleAddressStatus.type === 'error') {
+    } else if (addressStatus.type === 'error') {
       statusIcon = <ExclamationTriangleIcon className="w-5 h-5 mr-2 text-red-400" />;
       statusColor = 'text-red-400';
     }
   }
 
+  const handleQuickAddIntendedAddress = () => {
+    if (!intendedAddressName) return;
+    
+    const newAddress = { 
+      id: generateId(), 
+      name: intendedAddressName, 
+      value: '0x0' 
+    };
+    setNormalAddresses([...normalAddresses, newAddress]);
+  };
 
   return (
     <>
@@ -340,16 +349,26 @@ const EditAddressesModal: React.FC<EditAddressesModalProps> = ({
 
           <div className="mb-4 p-3 rounded-md bg-slate-900/70 border border-slate-700">
             <p className="text-sm text-slate-300">
-              当前检测到的模块名: <strong className="text-violet-400">{moduleName || '未检测到'}</strong>
+              当前检测到的地址名称: <strong className="text-violet-400">{intendedAddressName || '未检测到'}</strong>
             </p>
-            {moduleAddressStatus && (
-              <div className={`mt-2 flex items-center text-sm ${statusColor}`}>
-                {statusIcon}
-                <span>{moduleAddressStatus.message}</span>
+            {addressStatus && (
+              <div className={`mt-2 flex items-center justify-between text-sm ${statusColor}`}>
+                <div className="flex items-center">
+                  {statusIcon}
+                  <span>{addressStatus.message}</span>
+                </div>
+                {addressStatus.type === 'warning' && intendedAddressName && (
+                  <button
+                    onClick={handleQuickAddIntendedAddress}
+                    className="ml-3 px-3 py-1 text-xs bg-amber-600/80 text-white hover:bg-amber-600 rounded-md transition-colors"
+                  >
+                    快速添加
+                  </button>
+                )}
               </div>
             )}
-             {!moduleName && !moduleAddressStatus && (
-                <p className="text-xs text-slate-500 mt-1">提示: 模块名通常在代码类似 <code>module my_module::...</code> 定义处提取。如果未检测到，请检查模块定义。</p>
+             {!intendedAddressName && !addressStatus && (
+                <p className="text-xs text-slate-500 mt-1">提示: 地址名称通常在代码类似 <code>module my_address::...</code> 定义处提取。如果未检测到，请检查模块定义。</p>
             )}
           </div>
           
