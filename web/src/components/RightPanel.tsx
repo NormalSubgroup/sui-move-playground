@@ -2,7 +2,7 @@ import { useState } from 'react';
 import CompileResult from './CompileResult';
 import OperationResult from './OperationResult';
 import DeployOptions from './DeployOptions';
-import { RocketIcon, CheckCircledIcon, LightningBoltIcon, CubeIcon } from '@radix-ui/react-icons';
+import { RocketIcon, CheckCircledIcon, LightningBoltIcon, CubeIcon, EnterFullScreenIcon, ExitFullScreenIcon } from '@radix-ui/react-icons';
 import type { CompileResponse, DeployResponse, TestResponse } from '../types/api'; // Import correct types
 
 interface RightPanelProps {
@@ -31,10 +31,19 @@ const RightPanel = ({
   className, // Destructure className
 }: RightPanelProps) => {
   const [activeTab, setActiveTab] = useState<'compile' | 'test' | 'deploy'>('compile');
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const bytecodePath = compileResultData.result?.success ? compileResultData.result.bytecode_path : null;
 
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  const containerClass = isFullscreen 
+    ? "fixed inset-0 z-50 bg-background p-4 flex flex-col"
+    : `p-0 h-full flex flex-col ${className}`;
+
   return (
-    <div className={`p-0 h-full flex flex-col ${className}`}> {/* Apply className */}
+    <div className={containerClass}>
       <div className="flex border-b border-border px-2 pt-2 bg-panel rounded-t-md">
         {TABS.map(tab => (
           <button
@@ -50,9 +59,18 @@ const RightPanel = ({
             {tab.label}
           </button>
         ))}
+        <div className="ml-auto flex items-center">
+          <button
+            onClick={toggleFullscreen}
+            className="p-2 rounded hover:bg-background text-foreground/70 hover:text-foreground transition-colors"
+            title={isFullscreen ? "退出全屏" : "全屏显示"}
+          >
+            {isFullscreen ? <ExitFullScreenIcon className="w-4 h-4" /> : <EnterFullScreenIcon className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
 
-      <div className="flex-grow p-4 overflow-y-auto bg-background rounded-b-md"> {/* Content area background */}
+      <div className={`flex-grow overflow-y-auto bg-background rounded-b-md ${isFullscreen ? 'p-4' : 'p-4'}`}> {/* Content area background */}
         {activeTab === 'compile' && (
           <CompileResult
             result={compileResultData.result}
