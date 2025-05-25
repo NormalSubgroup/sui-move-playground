@@ -101,9 +101,9 @@ async fn create_temp_source_file(source_code: &str, file_name: &str, addresses_t
     let mut move_toml_content = String::from(r#"[package]
 name = "MoveWebCompile"
 version = "0.0.1"
+edition = "2024.beta"
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
 
 "#);
 
