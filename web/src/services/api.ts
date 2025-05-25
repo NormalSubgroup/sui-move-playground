@@ -110,138 +110,73 @@ export const codeExamples = [
     }
 }`
   },
+
   {
-    name: 'BasicTypes',
-    description: 'Move语言基本类型和操作演示',
-    code: `module examples::basic_types {
-    // 基本类型示例
+    name: 'CounterCar',
+    description: '对象创建与转移（Ownership & Abilities）',
+    code: `module example::counter_car {
+
     use sui::object::{Self, UID};
-    use sui::transfer;
     use sui::tx_context::{Self, TxContext};
-    
-    // 一个包含各种基本类型的结构体
-    struct TypeShowcase has key, store {
+
+    /// 一个带有 has key 能力的计数器对象
+    struct Counter has key {
         id: UID,
-        // 整数类型
-        u8_value: u8,
-        u16_value: u16,
-        u32_value: u32,
-        u64_value: u64,
-        u128_value: u128,
-        u256_value: u256,
-        // 布尔类型
-        bool_value: bool,
-        // 地址类型
-        address_value: address
+        value: u64,
     }
-    
-    // 创建一个包含示例值的TypeShowcase对象
-    public entry fun create_showcase(ctx: &mut TxContext) {
-        let showcase = TypeShowcase {
+
+    /// 一个带有 has key 能力的汽车对象
+    struct Car has key {
+        id: UID,
+        brand: vector<u8>,
+    }
+
+    /// 创建一个 Counter 对象并存储到调用者账户
+    public entry fun create_counter(ctx: &mut TxContext) {
+        let counter = Counter {
             id: object::new(ctx),
-            u8_value: 255, // u8最大值
-            u16_value: 65535, // u16最大值
-            u32_value: 4294967295, // u32最大值
-            u64_value: 18446744073709551615, // u64最大值
-            u128_value: 340282366920938463463374607431768211455, // u128最大值
-            u256_value: 115792089237316195423570985008687907853269984665640564039457584007913129639935, // u256最大值
-            bool_value: true,
-            address_value: tx_context::sender(ctx)
+            value: 0,
         };
-        transfer::public_transfer(showcase, tx_context::sender(ctx));
+        // 将 Counter 对象传递给调用者（存入账户）
+        transfer::transfer(counter, tx_context::sender(ctx));
     }
-    
-    // 演示算术运算
-    public fun perform_arithmetic(a: u64, b: u64): (u64, u64, u64, u64) {
-        let sum = a + b;
-        let difference = if (a > b) { a - b } else { b - a };
-        let product = a * b;
-        let quotient = if (b != 0) { a / b } else { 0 };
-        
-        (sum, difference, product, quotient)
-    }
-    
-    // 演示位运算
-    public fun perform_bitwise(a: u64, b: u64): (u64, u64, u64, u64) {
-        let bitwise_and = a & b;
-        let bitwise_or = a | b;
-        let bitwise_xor = a ^ b;
-        let left_shift = a << 1;
-        
-        (bitwise_and, bitwise_or, bitwise_xor, left_shift)
+
+    /// 创建一个 Car 对象并转移给指定地址
+    public entry fun create_and_transfer_car(recipient: address, brand: vector<u8>, ctx: &mut TxContext) {
+        let car = Car {
+            id: object::new(ctx),
+            brand,
+        };
+        transfer::transfer(car, recipient);
     }
 }`
   },
   {
-    name: 'Vector操作',
-    description: 'Move中Vector(动态数组)的基本操作',
-    code: `module examples::vector_operations {
-    use std::vector;
+    name: 'AdminCapability',
+    description: '能力（Capability）设计模式',
+    code: `module example::admin_capability {
+
     use sui::object::{Self, UID};
-    use sui::transfer;
     use sui::tx_context::{Self, TxContext};
-    
-    // 存储一个整数向量的对象
-    struct VectorContainer has key, store {
+
+    /// 管理员能力对象，只能由模块发布者持有
+    struct AdminCap has key {
         id: UID,
-        values: vector<u64>
     }
-    
-    // 创建一个空的向量容器
-    public entry fun create_empty(ctx: &mut TxContext) {
-        let container = VectorContainer {
-            id: object::new(ctx),
-            values: vector::empty<u64>()
-        };
-        transfer::public_transfer(container, tx_context::sender(ctx));
+
+    /// 初始化函数，只能由模块发布者调用，创建 AdminCap
+    public entry fun init(ctx: &mut TxContext) {
+        // 只允许模块发布者调用
+        assert!(tx_context::sender(ctx) == @0xYourModuleAddress, 1);
+        let cap = AdminCap { id: object::new(ctx) };
+        transfer::transfer(cap, tx_context::sender(ctx));
     }
-    
-    // 创建一个带有初始值的向量容器
-    public entry fun create_with_values(ctx: &mut TxContext) {
-        let values = vector::empty<u64>();
-        
-        // 添加一些值
-        vector::push_back(&mut values, 10);
-        vector::push_back(&mut values, 20);
-        vector::push_back(&mut values, 30);
-        
-        let container = VectorContainer {
-            id: object::new(ctx),
-            values
-        };
-        transfer::public_transfer(container, tx_context::sender(ctx));
-    }
-    
-    // 向容器中添加值
-    public entry fun add_value(container: &mut VectorContainer, value: u64) {
-        vector::push_back(&mut container.values, value);
-    }
-    
-    // 移除最后一个值
-    public entry fun remove_last(container: &mut VectorContainer) {
-        if (!vector::is_empty(&container.values)) {
-            vector::pop_back(&mut container.values);
-        }
-    }
-    
-    // 获取向量长度
-    public fun get_length(container: &VectorContainer): u64 {
-        vector::length(&container.values)
-    }
-    
-    // 检查向量是否包含特定值
-    public fun contains(container: &VectorContainer, value: u64): bool {
-        let i = 0;
-        let len = vector::length(&container.values);
-        
-        while (i < len) {
-            if (*vector::borrow(&container.values, i) == value) {
-                return true
-            };
-            i = i + 1;
-        };
-        
-        false
+
+    /// 只有持有 AdminCap 的账户才能调用的受保护操作
+    public entry fun admin_only_action(cap: AdminCap, ctx: &mut TxContext) {
+        // 这里可以执行只有管理员能做的操作
+        // 使用完毕后，cap 需要归还给调用者
+        transfer::transfer(cap, tx_context::sender(ctx));
     }
 }`
   }
