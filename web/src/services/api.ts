@@ -69,7 +69,7 @@ export const codeExamples = [
     // use sui::tx_context::{Self, TxContext};
     
     /// Hello对象，包含一个字符串
-    struct Hello has key, store {
+    public struct Hello has key, store {
         id: UID,
         message: string::String
     }
