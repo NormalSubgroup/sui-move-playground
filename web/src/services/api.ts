@@ -64,9 +64,9 @@ export const codeExamples = [
     description: '简单的Hello World示例',
     code: `module examples::hello {
     use std::string;
-    use sui::object::{Self, UID};
-    use sui::transfer;
-    use sui::tx_context::{Self, TxContext};
+    // use sui::object::{Self, UID};
+    // use sui::transfer;
+    // use sui::tx_context::{Self, TxContext};
     
     /// Hello对象，包含一个字符串
     struct Hello has key, store {
@@ -92,7 +92,7 @@ export const codeExamples = [
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     
-    struct Counter has key, store {
+    public struct Counter has key, store {
         id: UID,
         value: u64
     }
@@ -114,19 +114,15 @@ export const codeExamples = [
   {
     name: 'CounterCar',
     description: '对象创建与转移（Ownership & Abilities）',
-    code: `module example::counter_car {
-
-    use sui::object::{Self, UID};
-    use sui::tx_context::{Self, TxContext};
-
+    code: `module examples::counter_car {
     /// 一个带有 has key 能力的计数器对象
-    struct Counter has key {
+    public struct Counter has key {
         id: UID,
         value: u64,
     }
 
     /// 一个带有 has key 能力的汽车对象
-    struct Car has key {
+    public struct Car has key {
         id: UID,
         brand: vector<u8>,
     }
@@ -154,20 +150,19 @@ export const codeExamples = [
   {
     name: 'AdminCapability',
     description: '能力（Capability）设计模式',
-    code: `module example::admin_capability {
+    code: `module examples::admin_capability {
 
     use sui::object::{Self, UID};
     use sui::tx_context::{Self, TxContext};
 
     /// 管理员能力对象，只能由模块发布者持有
-    struct AdminCap has key {
+    public struct AdminCap has key {
         id: UID,
     }
 
     /// 初始化函数，只能由模块发布者调用，创建 AdminCap
-    public entry fun init(ctx: &mut TxContext) {
+    fun init(ctx: &mut TxContext) {
         // 只允许模块发布者调用
-        assert!(tx_context::sender(ctx) == @0xYourModuleAddress, 1);
         let cap = AdminCap { id: object::new(ctx) };
         transfer::transfer(cap, tx_context::sender(ctx));
     }
