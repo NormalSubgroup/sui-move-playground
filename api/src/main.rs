@@ -104,7 +104,7 @@ version = "0.0.1"
 edition = "2024.beta"
 
 [dependencies]
-
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
 "#);
 
     // 使用前端传递的地址内容，或者使用默认内容
